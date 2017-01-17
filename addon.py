@@ -2,7 +2,7 @@ import sys
 import os.path
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 import streamlink
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 import requests
 import re
 from urlparse import parse_qsl
@@ -16,6 +16,7 @@ pluginhandle = int(sys.argv[1])
 xbmcplugin.setContent(pluginhandle, 'tvshows')
 #constants
 uitzendingen_url = 'http://nos.nl/uitzending/nos-journaal.html'
+nos_prefix = 'http://nos.nl'
 regex_journaals = SoupStrainer(href=re.compile('/uitzending/[0-9]+-nos-journaal.html'))
 
 def play_url(url):
@@ -50,7 +51,7 @@ def get_journaals():
     journaals = []
     for link in html:
         journaal = {}
-        journaal['url'] = link.get('href')
+        journaal['url'] = nos_prefix + link.get('href')
         journaal['time'] = link.time.text.strip()
         journaals.append(journaal)
         
