@@ -1,2 +1,2 @@
 # plugin.video.nosjournaal
-Pick and choose from the latest NOS journaal videos of this day
+Pick and choose from the latest NOS journaal videos
