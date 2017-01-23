@@ -19,35 +19,32 @@ uitzendingen_url = 'http://nos.nl/uitzending/nos-journaal.html'
 nos_prefix = 'http://nos.nl'
 regex_journaals = SoupStrainer(href=re.compile('/uitzending/[0-9]+-nos-journaal.html'))
 
-def build_plugin_url(query):
-    """
-    build plugin url with the provided query
-    :param query: dict
-    :return: None
-    """
-    return (pluginurl + '?' + urlencode(query))
-
 def list():
     """
     create root folder listing all possible streams
     :return: None
     """
+    def build_plugin_url(action,url=None):
+        query = {'action':action}
+        if url: 
+            query['url'] = url
+        return (pluginurl + '?' + urlencode(query))
+       
     li = xbmcgui.ListItem('Laatste Journaal', iconImage='DefaultVideo.png')
     li.setProperty('IsPlayable', 'true')
     li.setInfo('video', infoLabels={'Title':'Laatste Journaal','mediatype':'video'})
-    xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url({'action':'latest'}), listitem=li)
+    xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url('latest'), listitem=li)
     li = xbmcgui.ListItem('Acht uur Journaal', iconImage='DefaultVideo.png')
     li.setProperty('IsPlayable', 'true')
     li.setInfo('video', infoLabels={'Title':'Laatste Acht uur Journaal','mediatype':'video'})
-    xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url({'action':'acht'}), listitem=li)
+    xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url('acht'), listitem=li)
 
     for journaal in get_journaals():
         title = journaal['time'] + ' Journaal'
         li = xbmcgui.ListItem(title, iconImage='DefaultVideo.png')
         li.setProperty('IsPlayable', 'true')
         li.setInfo('video', infoLabels={'Title':title,'mediatype':'video'})
-        query = {'action': 'play', 'url':journaal['url']}
-        xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url(query), listitem=li)
+        xbmcplugin.addDirectoryItem(handle=pluginhandle, url=build_plugin_url('play', url=journaal['url']), listitem=li)
     xbmcplugin.endOfDirectory(pluginhandle)
 
 def get_journaals():
@@ -58,6 +55,7 @@ def get_journaals():
     r = requests.get(uitzendingen_url)
     html = BeautifulSoup(r.text,'html.parser', parse_only=regex_journaals)
     for link in html:
+        journaal = {}
         journaal['url'] = nos_prefix + link.get('href') 
         journaal['time'] = link.time.text.strip()
         yield journaal
