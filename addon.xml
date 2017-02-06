@@ -22,7 +22,7 @@
     <source></source>
     <news></news>
     <assets>
-        <icon></icon>
+        <icon>resources/icon.png</icon>
         <fanart></fanart>
         <screenshot></screenshot>
     </assets>
